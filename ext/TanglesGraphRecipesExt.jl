@@ -14,13 +14,16 @@ function tinycircle(x, y, nodeheight, nodewidth)
     [(x + r_x * cos(t), y + r_y * sin(t)) for t in θ]
 end
 
-function GraphRecipes.graphplot(tn::Tangles.AbstractTensorNetwork;
-     node_labels=false, inner_edge_labels=false, open_edge_labels=false,
-     curves=false,
-     nodeshape=:circle,
-     nodesize=0.2,
-     kwargs...)
-
+function GraphRecipes.graphplot(
+    tn::Tangles.AbstractTensorNetwork;
+    node_labels=false,
+    inner_edge_labels=false,
+    open_edge_labels=false,
+    curves=false,
+    nodeshape=:circle,
+    nodesize=0.2,
+    kwargs...,
+)
     if !isempty(inds(tn; set=:hyper))
         throw(ArgumentError("hyper indices not supported for visualization yet"))
     end
