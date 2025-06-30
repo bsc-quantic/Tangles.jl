@@ -82,11 +82,11 @@ function GraphRecipes.graphplot(tn::Tangles.AbstractTensorNetwork;
 
     nshapes = [i in ghostnodes ? tinycircle : :circle for i in 1:nv(g)]
     
-    @info g
-    @info ne(g)
-    @info nv(g)
-    @info elabels
-    @info adjacency_matrix(g)
+    # @info g
+    # @info ne(g)
+    # @info nv(g)
+    # @info elabels
+    # @info adjacency_matrix(g)
 
     plt = graphplot(g;
         nodesize, curves,
