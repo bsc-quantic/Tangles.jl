@@ -15,7 +15,7 @@ function tinycircle(x, y, nodeheight, nodewidth)
 end
 
 function GraphRecipes.graphplot(tn::Tangles.AbstractTensorNetwork;
-     node_labels=false, edge_labels=false,
+     node_labels=false, inner_edge_labels=false, open_edge_labels=false,
      curves=false,
      nodeshape=:circle,
      nodesize=0.2,
@@ -27,59 +27,76 @@ function GraphRecipes.graphplot(tn::Tangles.AbstractTensorNetwork;
 
     tensormap = IdDict(tensor => i for (i, tensor) in enumerate(tensors(tn)))
 
-    g = Graphs.SimpleGraph(length(tensors(tn)))
+    g = Graphs.SimpleGraph(ntensors(tn))
 
-    for i in inds(tn; set=:inner)
-        edge_tensors = tensors(tn; intersect=i)
+    #elabels = Array{String}(undef, ntensors(tn),ntensors(tn))
+    num_nodes = ntensors(tn)
+    num_labels = num_nodes + length(inds(tn; set=:open))
+    elabels = fill("", num_labels, num_labels)
+
+    # Add edges between contracted tensors 
+    for ii in inds(tn; set=:inner)
+        edge_tensors = tensors(tn; intersect=ii)
 
         @assert length(edge_tensors) == 2
         a, b = edge_tensors
 
         add_edge!(g, tensormap[a], tensormap[b])
+        if inner_edge_labels
+            # symmetrize by hand 
+            elabels[tensormap[a], tensormap[b]] = string(ii.tag)
+            elabels[tensormap[b], tensormap[a]] = string(ii.tag)
+
+        end
     end
 
-    # Add ghost nodes for open indices
+    # Add ghost nodes for open indices at the end 
     ghostnodes = Int[]
-    for index in inds(tn; set=:open)
+    for ii in inds(tn; set=:open)
         add_vertex!(g)
         ghost_node = nv(g)
         push!(ghostnodes, ghost_node)
-        for _tensor in tensors(tn; intersect=index)
+        for _tensor in tensors(tn; intersect=ii)
             add_edge!(g, ghost_node, tensormap[_tensor])
+            if open_edge_labels 
+                 # symmetrize by hand 
+                elabels[ghost_node, tensormap[_tensor]] = string(ii.tag)
+                elabels[tensormap[_tensor], ghost_node] = string(ii.tag)
+
+            end
         end
     end
 
     nlabels = []
-    elabels = []
-
     # Node labels
     if node_labels
         nlabels = [string(i) for i in 1:nv(g)]
     end
 
-    if edge_labels 
-        elabels = ["" for e in edges(g)]
-    end
-
-
 
     # Node colors: ghost nodes in black, others in a color
     ncolors = [i in ghostnodes ? "black" : "orange" for i in 1:nv(g)]
 
-    # Node sizes: ghost nodes small, others based on tensor size
-    nsizes = [i in ghostnodes ? 0.001 : 1 for i in 1:nv(g)]
+    # Node sizes: ghost nodes small
+    #nsizes = [i in ghostnodes ? 0.001 : 1 for i in 1:nv(g)]
 
     nshapes = [i in ghostnodes ? tinycircle : :circle for i in 1:nv(g)]
     
+    @info g
+    @info ne(g)
+    @info nv(g)
+    @info elabels
+    @info adjacency_matrix(g)
+
     plt = graphplot(g;
         nodesize, curves,
         nodeshape=nshapes, 
         names=nlabels,
         markercolor=ncolors,
-        node_weights=nsizes,
+        #node_weights=nsizes,
         #markersize=nsizes,
+        edgelabel=elabels,
         kwargs...)
-        #edgelabel=elabels,
 
     return plt
 end
