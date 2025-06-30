@@ -88,9 +88,11 @@ function GraphRecipes.graphplot(
     # @info elabels
     # @info adjacency_matrix(g)
 
-    plt = graphplot(g;
-        nodesize, curves,
-        nodeshape=nshapes, 
+    plt = graphplot(
+        g;
+        nodesize,
+        curves,
+        nodeshape=nshapes,
         names=nlabels,
         markercolor=ncolors,
         #node_weights=nsizes,
