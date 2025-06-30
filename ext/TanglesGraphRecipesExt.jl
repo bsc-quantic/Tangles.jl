@@ -64,7 +64,6 @@ function GraphRecipes.graphplot(
                 # symmetrize by hand 
                 elabels[ghost_node, tensormap[_tensor]] = string(ii.tag)
                 elabels[tensormap[_tensor], ghost_node] = string(ii.tag)
-
             end
         end
     end
