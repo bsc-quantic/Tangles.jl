@@ -98,7 +98,8 @@ function GraphRecipes.graphplot(
         #node_weights=nsizes,
         #markersize=nsizes,
         edgelabel=elabels,
-        kwargs...)
+        kwargs...,
+    )
 
     return plt
 end
