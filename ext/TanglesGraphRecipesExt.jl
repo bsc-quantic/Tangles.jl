@@ -74,7 +74,6 @@ function GraphRecipes.graphplot(
         nlabels = [string(i) for i in 1:nv(g)]
     end
 
-
     # Node colors: ghost nodes in black, others in a color
     ncolors = [i in ghostnodes ? "black" : "orange" for i in 1:nv(g)]
 
