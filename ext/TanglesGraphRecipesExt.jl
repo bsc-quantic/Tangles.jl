@@ -61,8 +61,8 @@ function GraphRecipes.graphplot(
         push!(ghostnodes, ghost_node)
         for _tensor in tensors(tn; intersect=ii)
             add_edge!(g, ghost_node, tensormap[_tensor])
-            if open_edge_labels 
-                 # symmetrize by hand 
+            if open_edge_labels
+                # symmetrize by hand 
                 elabels[ghost_node, tensormap[_tensor]] = string(ii.tag)
                 elabels[tensormap[_tensor], ghost_node] = string(ii.tag)
 
