@@ -81,7 +81,6 @@ function GraphRecipes.graphplot(
     #nsizes = [i in ghostnodes ? 0.001 : 1 for i in 1:nv(g)]
 
     nshapes = [i in ghostnodes ? tinycircle : :circle for i in 1:nv(g)]
-    
     # @info g
     # @info ne(g)
     # @info nv(g)
