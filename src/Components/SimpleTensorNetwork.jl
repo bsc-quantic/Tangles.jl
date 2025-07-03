@@ -207,7 +207,7 @@ function rmtensor!(tn::SimpleTensorNetwork, tensor::Tensor)
     hastensor(tn, tensor) || throw(ArgumentError("Tensor not found"))
 
     target_vertex = vertex_at(tn, tensor)
-    edge_set = vertex_incidents(tn, target_vertex)
+    edge_set = vertex_incidents(tn, target_vertex) |> deepcopy
 
     # remove tensor
     delete!(tn.tensormap, target_vertex)
@@ -216,7 +216,11 @@ function rmtensor!(tn::SimpleTensorNetwork, tensor::Tensor)
     # remove indices if they were removed
     # TODO maybe we should refactor `rmtensor!` to check if we use a `Network` underneath and then, use the `RemoveVertexEffect` and `RemoveEdgeEffect` effects?
     for edge in edge_set
-        if !hasedge(tn, edge)
+        # Delete edge if it is not incident to any other tensor
+        vertex_set = edge_incidents(tn, edge)
+
+        if isempty(vertex_set)
+            rmedge!(tn.network, edge)
             delete!(tn.indmap, edge)
         end
     end
