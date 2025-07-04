@@ -429,6 +429,7 @@ end
     tn = GenericTensorNetwork()
     tn[site"1"] = Tensor(fill(0))
     tensor = Tensor(fill(1))
+    tn[site"1"] = tensor
     @test hassite(tn, site"1")
     @test hastensor(tn, tensor)
     @test tn[site"1"] === tensor
