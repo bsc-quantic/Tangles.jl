@@ -213,6 +213,7 @@ function rmtensor!(tn::SimpleTensorNetwork, tensor::Tensor)
     delete!(tn.tensormap, target_vertex)
     rmvertex!(tn.network, target_vertex)
 
+    # NOTE force edge pruning because as of Networks.jl 0.3.0, `EdgePersistence(::IncidentNetwork) = PersistEdges()`
     Networks.prune_edges!(tn.network)
 
     # remove indices if they were removed
