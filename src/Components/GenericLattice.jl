@@ -67,6 +67,7 @@ function Tangles.setbond!(g::GenericLattice, _bond)
 end
 
 # predefined constructors
+# NOTE dynamic-dispatch due to the `Val`-dispatch, but it's ok since will be called direclty by the user on a high level
 GenericLattice(kind::Symbol, args...; kwargs...) = GenericLattice(Val(kind), args...; kwargs...)
 
 """
