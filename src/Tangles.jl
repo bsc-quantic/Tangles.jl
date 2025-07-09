@@ -71,6 +71,9 @@ export adjoint_plugs!, align!, @align!
 include("Operations/AbstractTensorNetwork.jl")
 
 # implementations
+include("Components/GenericLattice.jl")
+export GenericLattice
+
 include("Components/SimpleTensorNetwork.jl")
 export SimpleTensorNetwork
 
