@@ -2,7 +2,6 @@ using QuantumTags
 using QuantumTags: Site, Link
 using Bijections
 using Networks
-using Random
 
 # TODO use dictionary with parameterized types
 const SiteBijection = Bijection{Site,Vertex{UUID},Dict{Site,Vertex{UUID}},Dict{Vertex{UUID},Site}}
@@ -181,66 +180,10 @@ function Base.isapprox(a::GenericTensorNetwork, b::GenericTensorNetwork; kwargs.
     return all(((x, y),) -> isapprox(x, y; kwargs...), zip(tensors(a), tensors(b)))
 end
 
-"""
-    rand(TensorNetwork, n::Integer, regularity::Integer; out = 0, dim = 2:9, seed = nothing, globalind = false)
-
-Generate a random tensor network.
-
-# Arguments
-
-  - `n` Number of tensors.
-  - `regularity` Average number of indices per tensor.
-  - `out` Number of open indices.
-  - `dim` Range of dimension sizes.
-  - `seed` If not `nothing`, seed random generator with this value.
-  - `globalind` Add a global 'broadcast' dimension to every tensor.
-"""
-function Base.rand(
-    rng::Random.AbstractRNG,
-    ::Type{TensorNetwork},
-    n::Integer,
-    regularity::Integer;
-    out=0,
-    dim=2:9,
-    seed=nothing,
-    globalind=false,
-    eltype=Float64,
-)
-    !isnothing(seed) && Random.seed!(rng, seed)
-
-    inds = letter.(randperm(n * regularity ÷ 2 + out))
-    size_dict = Dict(ind => rand(dim) for ind in inds)
-
-    outer_inds = collect(Iterators.take(inds, out))
-    inner_inds = collect(Iterators.drop(inds, out))
-
-    candidate_inds = shuffle(
-        collect(Iterators.flatten([outer_inds, Iterators.flatten(Iterators.repeated(inner_inds, 2))]))
-    )
-
-    inputs = map(x -> [x], Iterators.take(candidate_inds, n))
-
-    for ind in Iterators.drop(candidate_inds, n)
-        i = rand(1:n)
-        while ind in inputs[i]
-            i = rand(1:n)
-        end
-
-        push!(inputs[i], ind)
-    end
-
-    if globalind
-        ninds = length(size_dict)
-        ind = letter(ninds + 1)
-        size_dict[ind] = rand(dim)
-        push!(outer_inds, ind)
-        push!.(inputs, (ind,))
-    end
-
-    tensors = Tensor[Tensor(rand(eltype, [size_dict[ind] for ind in input]...), tuple(input...)) for input in inputs]
-    return GenericTensorNetwork(tensors)
+function Base.rand(::Type{GenericTensorNetwork}, n::Integer, regularity::Integer; kwargs...)
+    GenericTensorNetwork(rand(SimpleTensorNetwork, n, regularity; kwargs...))
 end
 
-function Base.rand(::Type{TensorNetwork}, n::Integer, regularity::Integer; kwargs...)
-    return rand(Random.default_rng(), TensorNetwork, n, regularity; kwargs...)
+function Base.rand(rng::Random.AbstractRNG, ::Type{GenericTensorNetwork}, n::Integer, regularity::Integer; kwargs...)
+    GenericTensorNetwork(rand(rng, SimpleTensorNetwork, n, regularity; kwargs...))
 end
