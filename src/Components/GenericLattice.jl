@@ -43,10 +43,10 @@ nsites(g::GenericLattice) = length(g.sitemap)
 nbonds(g::GenericLattice) = length(g.bondmap)
 
 # TODO change to `incident_edges` on next Networks.jl release
-incident_bonds(g::GenericLattice, _site) = vertex_at.(Ref(g), vertex_incidents(g.graph, _site))
+incident_bonds(g::GenericLattice, _site) = bond_at.(Ref(g), vertex_incidents(g, vertex_at(g, _site)))
 
 # TODO change to `incident_vertices` on next Networks.jl release
-incident_sites(g::GenericLattice, _bond) = bond_at.(Ref(g), edge_incidents(g.graph, _bond))
+incident_sites(g::GenericLattice, _bond) = site_at.(Ref(g), edge_incidents(g, edge_at(g, _bond)))
 
 site_at(g::GenericLattice, v::Networks.Vertex) = g.sitemap[v]
 bond_at(g::GenericLattice, e::Networks.Edge) = g.bondmap[e]
