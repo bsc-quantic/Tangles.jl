@@ -139,6 +139,12 @@ hasbond(tn::GenericTensorNetwork, link) = has_edge_tag(tn, link)
 nsites(::@NamedTuple{}, tn::GenericTensorNetwork) = length(tn.sitemap)
 nbonds(::@NamedTuple{}, tn::GenericTensorNetwork) = count(isbond, edge_tags(tn))
 
+# TODO change to `incident_edges` on next Networks.jl release
+incident_bonds(g::GenericLattice, _site) = vertex_at.(Ref(g), vertex_incidents(g.graph, _site))
+
+# TODO change to `incident_vertices` on next Networks.jl release
+incident_sites(g::GenericLattice, _bond) = bond_at.(Ref(g), edge_incidents(g.graph, _bond))
+
 setsite!(tn::GenericTensorNetwork, vertex, site) = tag_vertex!(tn, vertex, site)
 setbond!(tn::GenericTensorNetwork, edge, bond) = tag_edge!(tn, edge, bond)
 

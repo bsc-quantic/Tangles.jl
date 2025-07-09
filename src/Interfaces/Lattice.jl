@@ -30,6 +30,12 @@ function nbonds end
 function site_at end
 function bond_at end
 
+function incident_bonds end
+function incident_sites end
+
+function neighbor_sites end
+function neighbor_bonds end
+
 # mutating methods
 function setsite! end
 function setbond! end
@@ -147,6 +153,37 @@ site_at(lattice, tag, ::DontDelegate) = throw(MethodError(site_at, (lattice, tag
 bond_at(lattice, tag) = bond_at(lattice, tag, DelegatorTrait(Lattice(), lattice))
 bond_at(lattice, tag, ::DelegateToField) = bond_at(delegator(Lattice(), lattice), tag)
 bond_at(lattice, tag, ::DontDelegate) = throw(MethodError(bond_at, (lattice, tag)))
+
+## `incident_bonds`
+incident_bonds(lattice, site) = incident_bonds(lattice, site, DelegatorTrait(Lattice(), lattice))
+incident_bonds(lattice, site, ::DelegateToField) = incident_bonds(delegator(Lattice(), lattice), site)
+incident_bonds(lattice, site, ::DontDelegate) = throw(MethodError(incident_bonds, (lattice, site)))
+
+## `incident_sites`
+incident_sites(lattice, bond) = incident_sites(lattice, bond, DelegatorTrait(Lattice(), lattice))
+incident_sites(lattice, bond, ::DelegateToField) = incident_sites(delegator(Lattice(), lattice), bond)
+incident_sites(lattice, bond, ::DontDelegate) = throw(MethodError(incident_sites, (lattice, bond)))
+
+## `neighbor_sites`
+neighbor_sites(lattice, site) = neighbor_sites(lattice, site, DelegatorTrait(Lattice(), lattice))
+neighbor_sites(lattice, site, ::DelegateToField) = neighbor_sites(delegator(Lattice(), lattice), site)
+function neighbor_sites(lattice, site, ::DontDelegate)
+    fallback(neighbor_sites)
+    _bonds = incident_bonds(lattice, site)
+    return unique(is_site_equal, Iterators.map(b -> only(filter!(s != site, sites(b))), _bonds))
+end
+
+## `neighbor_bonds`
+neighbor_bonds(lattice, bond) = neighbor_bonds(lattice, bond, DelegatorTrait(Lattice(), lattice))
+neighbor_bonds(lattice, bond, ::DelegateToField) = neighbor_bonds(delegator(Lattice(), lattice), bond)
+function neighbor_bonds(lattice, bond, ::DontDelegate)
+    fallback(neighbor_bonds)
+    _sites = incident_sites(lattice, bond)
+    _neigh_bonds = map(_sites) do _site
+        filter(s -> !is_bond_equal(s, bond), incident_bonds(lattice, _site))
+    end
+    return unique(is_bond_equal, _neigh_bonds)
+end
 
 ## `setsite!`
 # TODO check that the site does not exist and that the tensor exists
