@@ -195,3 +195,29 @@ end
 function Base.rand(rng::Random.AbstractRNG, ::Type{GenericTensorNetwork}, n::Integer, regularity::Integer; kwargs...)
     GenericTensorNetwork(rand(rng, SimpleTensorNetwork, n, regularity; kwargs...))
 end
+
+function generic_rand_state(lattice::GenericLattice, d, χ; rng=Random.default_rng(), eltype=ComplexF64)
+    tn = GenericTensorNetwork()
+
+    for site in all_sites_iter(lattice)
+        _incident_bonds = incident_bonds(lattice, site)
+        _inds = [map(Index, _incident_bonds); [Index(plug"$site")]]
+
+        array = rand(rng, eltype, fill(χ, length(_incident_bonds))..., d)
+        tensor = Tensor(array, _inds)
+
+        addtensor!(tn, tensor)
+        setsite!(tn, tensor, site)
+        setplug!(tn, Index(plug"$site"), plug"$site")
+    end
+
+    for bond in all_bonds_iter(lattice)
+        setbond!(tn, Index(bond), bond)
+    end
+
+    return tn
+end
+
+function Base.rand(::Type{GenericTensorNetwork}, lattice::GenericLattice, d, χ; kwargs...)
+    generic_rand_state(lattice, d, χ; kwargs...)
+end
