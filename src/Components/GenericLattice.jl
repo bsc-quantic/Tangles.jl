@@ -30,22 +30,22 @@ Networks.vertex_at(g::GenericLattice, _site) = g.sitemap(_site)
 Networks.edge_at(g::GenericLattice, _bond) = g.bondmap(_bond)
 
 # `Lattice` interface
-DelegatorTraits.ImplementorTrait(::Tangles.Lattice, ::GenericLattice) = DelegatorTraits.Implements()
+DelegatorTraits.ImplementorTrait(::Lattice, ::GenericLattice) = DelegatorTraits.Implements()
 
-Tangles.all_sites(g::GenericLattice) = collect(values(g.sitemap))
-Tangles.all_bonds(g::GenericLattice) = collect(values(g.bondmap))
-Tangles.all_sites_iter(g::GenericLattice) = values(g.sitemap)
-Tangles.all_bonds_iter(g::GenericLattice) = values(g.bondmap)
+all_sites(g::GenericLattice) = collect(values(g.sitemap))
+all_bonds(g::GenericLattice) = collect(values(g.bondmap))
+all_sites_iter(g::GenericLattice) = values(g.sitemap)
+all_bonds_iter(g::GenericLattice) = values(g.bondmap)
 
-Tangles.hassite(g::GenericLattice, _site) = hasvalue(g.sitemap, _site)
-Tangles.hasbond(g::GenericLattice, _bond) = hasvalue(g.bondmap, _bond)
-Tangles.nsites(g::GenericLattice) = length(g.sitemap)
-Tangles.nbonds(g::GenericLattice) = length(g.bondmap)
+hassite(g::GenericLattice, _site) = hasvalue(g.sitemap, _site)
+hasbond(g::GenericLattice, _bond) = hasvalue(g.bondmap, _bond)
+nsites(g::GenericLattice) = length(g.sitemap)
+nbonds(g::GenericLattice) = length(g.bondmap)
 
-Tangles.site_at(g::GenericLattice, v::Networks.Vertex) = g.sitemap[v]
-Tangles.bond_at(g::GenericLattice, e::Networks.Edge) = g.bondmap[e]
+site_at(g::GenericLattice, v::Networks.Vertex) = g.sitemap[v]
+bond_at(g::GenericLattice, e::Networks.Edge) = g.bondmap[e]
 
-function Tangles.setsite!(g::GenericLattice, _site)
+function setsite!(g::GenericLattice, _site)
     hassite(g, _site) && throw(ArgumentError("$site already in the lattice"))
     v = Networks.Vertex(uuid4())
     addvertex!(g.graph, v)
@@ -53,7 +53,7 @@ function Tangles.setsite!(g::GenericLattice, _site)
     return g
 end
 
-function Tangles.setbond!(g::GenericLattice, _bond)
+function setbond!(g::GenericLattice, _bond)
     hasbond(g, _bond) && throw(ArgumentError("$bond already in the lattice"))
     e = Networks.Edge(uuid4())
     addedge!(g.graph, e)
