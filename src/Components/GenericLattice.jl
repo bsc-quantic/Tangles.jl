@@ -56,6 +56,17 @@ function addsite!(g::GenericLattice, _site)
     v = Networks.Vertex(uuid4())
     addvertex!(g.graph, v)
     g.sitemap[v] = _site
+
+    # TODO change to a "adjacent matrix"-based representation to avoid iterating over all edges
+    for _bond in all_bonds_iter(g)
+        _sites = QuantumTags.sites(_bond)
+        if _site in _sites
+            # link the vertex to the bond
+            e = edge_at(g, _bond)
+            Networks.link!(g.graph, v, e)
+        end
+    end
+
     return g
 end
 
@@ -63,7 +74,11 @@ function addbond!(g::GenericLattice, _bond)
     hasbond(g, _bond) && return g
     e = Networks.Edge(uuid4())
     addedge!(g.graph, e)
-    _sites = QuantumTags.sites(_bond)
+
+    # filter to allow for open bonds
+    _sites = filter(s -> hassite(g, s), QuantumTags.sites(_bond))
+    @assert !isempty(_sites) "Bond must have at least one site in the lattice"
+
     _vs = [vertex_at(g, _site) for _site in _sites]
     for v in _vs
         Networks.link!(g.graph, v, e)
