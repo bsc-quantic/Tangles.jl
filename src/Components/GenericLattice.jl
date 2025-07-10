@@ -51,16 +51,16 @@ incident_sites(g::GenericLattice, _bond) = site_at.(Ref(g), edge_incidents(g, ed
 site_at(g::GenericLattice, v::Networks.Vertex) = g.sitemap[v]
 bond_at(g::GenericLattice, e::Networks.Edge) = g.bondmap[e]
 
-function setsite!(g::GenericLattice, _site)
-    hassite(g, _site) && throw(ArgumentError("$site already in the lattice"))
+function addsite!(g::GenericLattice, _site)
+    hassite(g, _site) && return g
     v = Networks.Vertex(uuid4())
     addvertex!(g.graph, v)
     g.sitemap[v] = _site
     return g
 end
 
-function setbond!(g::GenericLattice, _bond)
-    hasbond(g, _bond) && throw(ArgumentError("$bond already in the lattice"))
+function addbond!(g::GenericLattice, _bond)
+    hasbond(g, _bond) && return g
     e = Networks.Edge(uuid4())
     addedge!(g.graph, e)
     _sites = QuantumTags.sites(_bond)
@@ -88,15 +88,15 @@ Create a chain lattice with `n` sites.
 function GenericLattice(::Val{:chain}, n; periodic=false)
     lattice = GenericLattice()
     for i in 1:n
-        setsite!(lattice, site"$i")
+        addsite!(lattice, site"$i")
     end
 
     for i in 1:(n - 1)
-        setbond!(lattice, bond"$i - $(i + 1)")
+        addbond!(lattice, bond"$i - $(i + 1)")
     end
 
     if periodic
-        setbond!(lattice, bond"1-$n")
+        addbond!(lattice, bond"1-$n")
     end
 
     return lattice
@@ -114,24 +114,24 @@ Create a rectangular lattice with `nrows` rows and `ncols` columns.
 function GenericLattice(::Val{:rectangular}, nrows, ncols; periodic=false)
     lattice = GenericLattice()
     for row in 1:nrows, col in 1:ncols
-        setsite!(lattice, site"$row,$col")
+        addsite!(lattice, site"$row,$col")
     end
 
     for row in 1:nrows, col in 1:(ncols - 1)
-        setbond!(lattice, bond"($row,$col) - ($row,$(col + 1))")
+        addbond!(lattice, bond"($row,$col) - ($row,$(col + 1))")
     end
 
     for row in 1:(nrows - 1), col in 1:ncols
-        setbond!(lattice, bond"($row,$col) - ($(row + 1),$col)")
+        addbond!(lattice, bond"($row,$col) - ($(row + 1),$col)")
     end
 
     if periodic
         for row in 1:nrows
-            setbond!(lattice, bond"($row,1) - ($row,$ncols)")
+            addbond!(lattice, bond"($row,1) - ($row,$ncols)")
         end
 
         for col in 1:ncols
-            setbond!(lattice, bond"(1,$col) - ($nrows,$col)")
+            addbond!(lattice, bond"(1,$col) - ($nrows,$col)")
         end
     end
 
@@ -151,17 +151,17 @@ function GenericLattice(::Val{:lieb}, ncellrows, ncellcols)
     for row in 1:nrows, col in 1:ncols
         # skip holes
         row % 2 == 0 && col % 2 == 0 && continue
-        setsite!(lattice, site"$row,$col")
+        addsite!(lattice, site"$row,$col")
     end
 
     # add horizontal edges
     for row in 1:2:nrows, col in 1:(ncols - 1)
-        setbond!(lattice, bond"$(row,col) - $(row, col + 1)")
+        addbond!(lattice, bond"$(row,col) - $(row, col + 1)")
     end
 
     # add vertical edges
     for row in 1:(nrows - 1), col in 1:2:ncols
-        setbond!(lattice, bond"$(row,col) - $(row + 1, col)")
+        addbond!(lattice, bond"$(row,col) - $(row + 1, col)")
     end
 
     return lattice

@@ -37,6 +37,11 @@ function neighbor_sites end
 function neighbor_bonds end
 
 # mutating methods
+function addsite! end
+function addbond! end
+function rmbond! end
+function rmsite! end
+
 function setsite! end
 function setbond! end
 function unsetsite! end
@@ -184,6 +189,26 @@ function neighbor_bonds(lattice, bond, ::DontDelegate)
     end
     return unique(is_bond_equal, _neigh_bonds)
 end
+
+## `addsite!`
+addsite!(lattice, site) = addsite!(lattice, site, DelegatorTrait(Lattice(), lattice))
+addsite!(lattice, site, ::DelegateToField) = addsite!(delegator(Lattice(), lattice), site)
+addsite!(lattice, site, ::DontDelegate) = throw(MethodError(addsite!, (lattice, site)))
+
+## `addbond!`
+addbond!(lattice, bond) = addbond!(lattice, bond, DelegatorTrait(Lattice(), lattice))
+addbond!(lattice, bond, ::DelegateToField) = addbond!(delegator(Lattice(), lattice), bond)
+addbond!(lattice, bond, ::DontDelegate) = throw(MethodError(addbond!, (lattice, bond)))
+
+## `rmsite!`
+rmsite!(lattice, site) = rmsite!(lattice, site, DelegatorTrait(Lattice(), lattice))
+rmsite!(lattice, site, ::DelegateToField) = rmsite!(delegator(Lattice(), lattice), site)
+rmsite!(lattice, site, ::DontDelegate) = throw(MethodError(rmsite!, (lattice, site)))
+
+## `rmbond!`
+rmbond!(lattice, bond) = rmbond!(lattice, bond, DelegatorTrait(Lattice(), lattice))
+rmbond!(lattice, bond, ::DelegateToField) = rmbond!(delegator(Lattice(), lattice), bond)
+rmbond!(lattice, bond, ::DontDelegate) = throw(MethodError(rmbond!, (lattice, bond)))
 
 ## `setsite!`
 # TODO check that the site does not exist and that the tensor exists

@@ -39,7 +39,7 @@ include("Interfaces/Lattice.jl")
 @public Lattice
 export sites, site, site_at, hassite, nsites, all_sites, sites_like, site_like
 export bonds, bond, bond_at, hasbond, nbonds, all_bonds, bonds_like, bond_like
-export setsite!, setbond!, unsetsite!, unsetbond!
+export addsite!, addbond!, rmsite!, rmbond!, setsite!, setbond!, unsetsite!, unsetbond!
 
 include("Interfaces/Pluggable.jl")
 @public Pluggable
