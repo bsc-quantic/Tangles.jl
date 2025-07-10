@@ -87,6 +87,8 @@ function addbond!(g::GenericLattice, _bond)
     return g
 end
 
+# TODO rmsite!, rmbond!
+
 # predefined constructors
 # NOTE dynamic-dispatch due to the `Val`-dispatch, but it's ok since will be called direclty by the user on a high level
 GenericLattice(kind::Symbol, args...; kwargs...) = GenericLattice(Val(kind), args...; kwargs...)
