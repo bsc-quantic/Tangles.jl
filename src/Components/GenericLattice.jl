@@ -5,6 +5,11 @@ using QuantumTags
 using DelegatorTraits
 using ValSplit
 
+"""
+    GenericLattice
+
+An object that implements the `Lattice` interface to model arbitrary discrete topologies.
+"""
 struct GenericLattice
     graph::IncidentNetwork{Networks.Vertex{UUID},Networks.Edge{UUID}}
     sitemap::Bijection{Networks.Vertex{UUID},Site}
