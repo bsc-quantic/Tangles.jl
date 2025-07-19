@@ -1,7 +1,6 @@
 using DelegatorTraits
 using Base: AbstractVecOrTuple
 using ArgCheck
-using ValSplit
 using Networks
 using QuantumTags
 using Muscle: Muscle
@@ -202,8 +201,14 @@ function tensors_intersect_inds(tn, target::AbstractVecOrTuple)
 end
 
 ## `inds_set`
-@valsplit function inds_set(tn, Val(set::Symbol))
-    throw(ArgumentError("Unknown query: set=$(set)"))
+#@valsplit function inds_set(tn, Val(set::Symbol))
+#    throw(ArgumentError("Unknown query: set=$(set)"))
+#end
+function inds_set(tn, ::Val{S}) where {S}
+    throw(ArgumentError("Unknown query: set=$(S)"))
+end
+function inds_set(tn, set::Symbol)
+    inds_set(tn, Val(set))
 end
 
 inds_set(tn, ::Val{:all}) = all_inds(tn)
