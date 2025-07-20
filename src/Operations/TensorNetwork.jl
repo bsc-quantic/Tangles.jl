@@ -152,13 +152,13 @@ Rename indices in the Tensor Network to `Index(tag)` where `tag` is the tagging 
 function canonicalize_inds!(tn)
     if ImplementorTrait(Lattice(), tn) === Implements()
         for _bond in all_bonds(tn)
-            replace_ind!(tn, ind_at(tn, _bond) => Index(_bond))
+            replace_ind!(tn, ind_at(tn, _bond), Index(_bond))
         end
     end
 
     if ImplementorTrait(Pluggable(), tn) === Implements()
         for _plug in all_plugs(tn)
-            replace_ind!(tn, ind_at(tn, _plug) => Index(_plug))
+            replace_ind!(tn, ind_at(tn, _plug), Index(_plug))
         end
     end
 
