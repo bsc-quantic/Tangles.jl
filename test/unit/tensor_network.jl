@@ -489,7 +489,7 @@ end
 
     @test ind_at(tn, bond"1-2") == Index(:i)
     @test ind_at(tn, plug"1") == Index(:j)
-    tn = canonicalize_inds!(tn)
+    tn = Tenet.canonicalize_inds!(tn)
     @test ind_at(tn, bond"1-2") == Index(bond"1-2")
     @test ind_at(tn, plug"1") == Index(plug"1")
 end
