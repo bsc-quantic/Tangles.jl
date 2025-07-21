@@ -99,13 +99,8 @@ function plug_like(tn, plug, ::DontDelegate)
 end
 
 ## `plugs_set`
-#@valsplit plugs_set(tn, Val(set::Symbol)) = throw(ArgumentError("invalid `set` values: $(set)"))
-function plugs_set(tn, set::Symbol)
-    plugs_set(tn, Val(set))
-end
-function plugs_set(tn, ::Val{S}) where {S}
-    throw(ArgumentError("invalid `set` value: $(S)"))
-end
+plugs_set(tn, set::Symbol) = plugs_set(tn, Val(set))
+plugs_set(tn, ::Val{S}) where {S} = throw(ArgumentError("invalid `set` value: $(S)"))
 
 plugs_set(tn, ::Val{:all}) = plugs_set_all(tn)
 plugs_set_all(tn) = all_plugs(tn)
