@@ -8,8 +8,8 @@ end
 
 LayeredTensorNetwork() = LayeredTensorNetwork(GenericTensorNetwork())
 
-ImplementorTrait(interface, tn::MPS) = ImplementorTrait(interface, tn.tn)
-function DelegatorTrait(interface, tn::MPS)
+ImplementorTrait(interface, tn::LayeredTensorNetwork) = ImplementorTrait(interface, tn.tn)
+function DelegatorTrait(interface, tn::LayeredTensorNetwork)
     if ImplementorTrait(interface, tn.tn) === Implements()
         DelegateToField{:tn}()
     else
