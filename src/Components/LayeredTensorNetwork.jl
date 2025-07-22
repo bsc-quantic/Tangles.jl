@@ -3,10 +3,10 @@ import QuantumTags: layers
 using DelegatorTraits
 
 struct LayeredTensorNetwork <: AbstractTensorNetwork
-    tn::GeneralizedTensorNetwork
+    tn::GenericTensorNetwork
 end
 
-LayeredTensorNetwork() = LayeredTensorNetwork(GeneralizedTensorNetwork())
+LayeredTensorNetwork() = LayeredTensorNetwork(GenericTensorNetwork())
 
 ImplementorTrait(interface, tn::MPS) = ImplementorTrait(interface, tn.tn)
 function DelegatorTrait(interface, tn::MPS)
