@@ -19,7 +19,20 @@ function DelegatorTrait(interface, tn::LayeredTensorNetwork)
     end
 end
 
-layers(tn::LayeredTensorNetwork) = unique(map(layer, all_sites_iter(tn)))
+layers(tn::LayeredTensorNetwork) = tn.layers # unique(map(layer, all_sites_iter(tn)))
+haslayer(tn::LayeredTensorNetwork, _layer::Layer) = _layer in tn.layers
+
+function all_sites_at_layer(tn::LayeredTensorNetwork, _layer::Layer)
+    @argcheck _layer in layers(tn) "Layer $_layer not found in LayeredTensorNetwork"
+    return filter!(s -> layer(s) == _layer, all_sites(tn))
+end
+
+function cart_sites(tn::LayeredTensorNetwork)
+    sort!(
+        filter!(s -> site(s) isa CartesianSite, all_sites(tn));
+        lt=(a, b) -> layer(a) == layer(b) ? site(a) < site(b) : layer(a).id < layer(b).id,
+    )
+end
 
 function pushlayer!(tn::LayeredTensorNetwork, layer_tn; layer::Layer=Layer(length(tn.layers) + 1))
     @argcheck ntensors(layer_tn) == nsites(layer_tn) "Each tensor in a layer must correspond to a site"
